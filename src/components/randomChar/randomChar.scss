@@ -30,6 +30,8 @@
     &__descr {
         font-size: 14px;
         line-height: 18px;
+        max-height: 90px;
+        overflow-y: hidden;
     }
     &__btns {
         a:nth-child(1) {
