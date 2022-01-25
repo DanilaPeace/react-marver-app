@@ -12,8 +12,8 @@ const MAX_CHARACTER_ID = 1011400;
 
 class RandomChar extends Component {
   constructor(props) {
+    console.log(">>> CONSTRUCTOR");
     super(props);
-    this.updateChar();
   }
   state = {
     character: {},
@@ -21,6 +21,10 @@ class RandomChar extends Component {
     error: false,
   };
   marvelServer = new MarvelServer();
+
+  componentDidMount = () => {
+    this.updateChar();
+  };
 
   onCharLoaded = (character) => {
     this.setState({ character, loading: false });
@@ -49,7 +53,6 @@ class RandomChar extends Component {
     const errorImg = error ? <ErrorMessage /> : null;
     const spinner = loading ? <Spinner /> : null;
     const content = !(loading || error) ? <View char={character} /> : null;
-
     return (
       <div className="randomchar">
         {errorImg}
@@ -63,7 +66,7 @@ class RandomChar extends Component {
           </p>
           <div className="inner">try it</div>
           <p className="randomchar__title">Or choose another one</p>
-          <button className="button button__main"></button>
+          <button className="button button__main">Learn more</button>
           <img src={mjolnir} alt="mjolnir" className="randomchar__decoration" />
         </div>
       </div>
