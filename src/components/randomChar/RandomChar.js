@@ -1,4 +1,4 @@
-import { Component, useEffect } from "react";
+import { Component } from "react";
 
 import "./randomChar.scss";
 import mjolnir from "../../resources/img/mjolnir.png";
@@ -45,12 +45,26 @@ class RandomChar extends Component {
       .catch(this.onError);
   };
 
+  checkCharHasImg = (thumbnail) => {
+    if (!thumbnail) {
+      return false;
+    }
+    return thumbnail.indexOf("image_not_available.jpg") > -1 ? false : true;
+  };
+
   render() {
-    let { character, loading, error } = this.state;
+    const { character, loading, error } = this.state;
+
+    const objFitStyle = !this.checkCharHasImg(character.thumbnail)
+      ? { objectFit: "contain" }
+      : null;
 
     const errorImg = error ? <ErrorMessage /> : null;
     const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) ? <View char={character} /> : null;
+    const content = !(loading || error) ? (
+      <View char={character} imgStyle={objFitStyle} />
+    ) : null;
+
     return (
       <div className="randomchar">
         {errorImg}
@@ -76,33 +90,31 @@ class RandomChar extends Component {
   }
 }
 
-class View extends Component {
-  render() {
-    const { thumbnail, name, homepage, wiki } = this.props.char;
-    let { description } = this.props.char;
+const View = ({ char, imgStyle }) => {
+  const { thumbnail, description, name, homepage, wiki } = char;
 
-    return (
-      <div className="randomchar__block">
-        <img
-          src={thumbnail}
-          alt="Random character"
-          className="randomchar__img"
-        />
-        <div className="randomchar__info">
-          <p className="randomchar__name">{name}</p>
-          <p className="randomchar__descr">{description}</p>
-          <div className="randomchar__btns">
-            <a href={homepage} className="button button__main">
-              <div className="inner">homepage</div>
-            </a>
-            <a href={wiki} className="button button__secondary">
-              <div className="inner">Wiki</div>
-            </a>
-          </div>
+  return (
+    <div className="randomchar__block">
+      <img
+        src={thumbnail}
+        alt="Random character"
+        className="randomchar__img"
+        style={imgStyle}
+      />
+      <div className="randomchar__info">
+        <p className="randomchar__name">{name}</p>
+        <p className="randomchar__descr">{description}</p>
+        <div className="randomchar__btns">
+          <a href={homepage} className="button button__main">
+            <div className="inner">homepage</div>
+          </a>
+          <a href={wiki} className="button button__secondary">
+            <div className="inner">Wiki</div>
+          </a>
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default RandomChar;

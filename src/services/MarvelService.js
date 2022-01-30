@@ -16,16 +16,16 @@ class MarvelService {
       `${this._apiBase}characters?limit=9&offset=210&${this._apiKey}`
     );
 
-    return res.data.results.map(this._tansformCaracter);
+    return res.data.results.map(this._tansformCharacter);
   };
 
   getCharacter = async (id) => {
     const res = await this.getResource(`${this._apiBase}characters/${id}?${this._apiKey}`);
 
-    return this._tansformCaracter(res.data.results[0]);
+    return this._tansformCharacter(res.data.results[0]);
   };
 
-  _tansformCaracter = (character) => {
+  _tansformCharacter = (character) => {
     return {
       name: character.name,
       description: character.description,
