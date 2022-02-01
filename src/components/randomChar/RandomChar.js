@@ -5,6 +5,7 @@ import mjolnir from "../../resources/img/mjolnir.png";
 import MarvelServer from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
+import CharacterHelper from "../../helpers/character-helper";
 
 const MAX_DESCRIPTION_LENGTH = 215;
 const MIN_CHARACTER_ID = 1011000;
@@ -36,7 +37,8 @@ class RandomChar extends Component {
   updateChar = () => {
     const id = Math.floor(
       Math.random() * (MAX_CHARACTER_ID - MIN_CHARACTER_ID) + MIN_CHARACTER_ID
-    );
+      );
+    this.setState({loading: true, error: false});
     this.marvelServer
       .getCharacter(id)
       .then((charData) => {
@@ -45,24 +47,29 @@ class RandomChar extends Component {
       .catch(this.onError);
   };
 
-  checkCharHasImg = (thumbnail) => {
-    if (!thumbnail) {
-      return false;
+  getCharDesc = () => {
+    const { description } = this.state.character;
+    if (description.length < MAX_DESCRIPTION_LENGTH) {
+      return description;
     }
-    return thumbnail.indexOf("image_not_available.jpg") > -1 ? false : true;
+    return description.substring(0, MAX_DESCRIPTION_LENGTH) + "...";
   };
 
   render() {
     const { character, loading, error } = this.state;
+    const { description } = character;
 
-    const objFitStyle = !this.checkCharHasImg(character.thumbnail)
+    const imgStyle = !CharacterHelper.charHasImg(character.thumbnail)
       ? { objectFit: "contain" }
       : null;
+    const charDesc = description
+      ? this.getCharDesc()
+      : "There is not information about this  character";
 
     const errorImg = error ? <ErrorMessage /> : null;
     const spinner = loading ? <Spinner /> : null;
     const content = !(loading || error) ? (
-      <View char={character} imgStyle={objFitStyle} />
+      <View char={character} imgStyle={imgStyle} desc={charDesc} />
     ) : null;
 
     return (
@@ -90,8 +97,8 @@ class RandomChar extends Component {
   }
 }
 
-const View = ({ char, imgStyle }) => {
-  const { thumbnail, description, name, homepage, wiki } = char;
+const View = ({ char, imgStyle, desc }) => {
+  const { thumbnail, name, homepage, wiki } = char;
 
   return (
     <div className="randomchar__block">
@@ -103,7 +110,7 @@ const View = ({ char, imgStyle }) => {
       />
       <div className="randomchar__info">
         <p className="randomchar__name">{name}</p>
-        <p className="randomchar__descr">{description}</p>
+        <p className="randomchar__descr">{desc}</p>
         <div className="randomchar__btns">
           <a href={homepage} className="button button__main">
             <div className="inner">homepage</div>
