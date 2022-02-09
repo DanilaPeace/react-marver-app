@@ -1,7 +1,5 @@
 import { Component } from "react";
 import CharacterHelper from "../../helpers/character-helper";
-import abyss from "../../resources/img/abyss.jpg";
-import { CharacterListService } from "../../services/CharacterListService";
 import MarvelService from "../../services/MarvelService";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import Spinner from "../spinner/Spinner";
@@ -41,20 +39,27 @@ class CharList extends Component {
     });
   };
 
-  render() {
-    const { characters, isLoading, error } = this.state;
-    const characterList = characters?.map((char, idx) => {
-      const { name, thumbnail } = char;
+  getCharacterList = () => {
+    const { characters } = this.state;
+    const charList = characters?.map((char) => {
+      const { name, thumbnail, id } = char;
       const imgStyle = !CharacterHelper.charHasImg(thumbnail)
         ? { objectFit: "contain" }
         : null;
       return (
-        <li className="char__item" key={idx}>
+        <li className="char__item" key={id}>
           <img src={thumbnail} alt={name} style={imgStyle} />
           <div className="char__name">{name}</div>
         </li>
       );
     });
+
+    return charList;
+  };
+
+  render() {
+    const { characters, isLoading, error } = this.state;
+    const characterList = this.getCharacterList();
 
     const spinner = isLoading ? <Spinner /> : null;
     const errorMessage = error ? <ErrorMessage /> : null;
