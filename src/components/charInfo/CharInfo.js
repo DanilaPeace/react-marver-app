@@ -4,6 +4,7 @@ import MarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import Skeleton from "../skeleton/Skeleton";
+import CharacterHelper from "../../helpers/character-helper";
 
 class CharInfo extends Component {
   state = {
@@ -56,11 +57,15 @@ class CharInfo extends Component {
 
   render() {
     const { character, error, loading } = this.state;
-    const skeleton = loading || error || character ? null : <Skeleton />;
+    const imgStyle = !CharacterHelper.charHasImg(character?.thumbnail)
+      ? { objectFit: "contain" }
+      : null;
+    // const skeleton = loading || error || character ? null : <Skeleton />;
+    const skeleton = !loading && !error && !character ? <Skeleton /> : null;
     const spinner = loading ? <Spinner /> : null;
     const errorMessage = error ? <ErrorMessage /> : null;
     const content = !(loading || error || !character) ? (
-      <View char={character} />
+      <View char={character} imgStyle={imgStyle}/>
     ) : null;
 
     return (
@@ -74,16 +79,20 @@ class CharInfo extends Component {
   }
 }
 
-const View = ({ char }) => {
+const View = ({ char, imgStyle }) => {
   console.log(char);
   const { name, description, thumbnail, homepage, wiki, comics } = char;
   const comicsList = comics.map((item, idx) => {
-    return <li key={idx} className="char__comics-item">{item.name}</li>;
+    return (
+      <li key={idx} className="char__comics-item">
+        {item.name}
+      </li>
+    );
   });
   return (
     <>
       <div className="char__basics">
-        <img src={thumbnail} alt={name} />
+        <img src={thumbnail} alt={name} style={imgStyle}/>
         <div>
           <div className="char__info-name">{name}</div>
           <div className="char__btns">
