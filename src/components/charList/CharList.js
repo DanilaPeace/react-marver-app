@@ -39,6 +39,11 @@ class CharList extends Component {
     });
   };
 
+  onCharClick = (event, id) => {
+    const { onCharClick } = this.props;
+    onCharClick(id);
+  }
+
   getCharacterList = () => {
     const { characters } = this.state;
     const charList = characters?.map((char) => {
@@ -47,7 +52,7 @@ class CharList extends Component {
         ? { objectFit: "contain" }
         : null;
       return (
-        <li className="char__item" key={id}>
+        <li className="char__item" key={id} onClick={event => this.onCharClick(event, id)}>
           <img src={thumbnail} alt={name} style={imgStyle} />
           <div className="char__name">{name}</div>
         </li>
@@ -58,7 +63,7 @@ class CharList extends Component {
   };
 
   render() {
-    const { characters, isLoading, error } = this.state;
+    const { isLoading, error } = this.state;
     const characterList = this.getCharacterList();
 
     const spinner = isLoading ? <Spinner /> : null;

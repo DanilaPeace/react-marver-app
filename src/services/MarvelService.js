@@ -1,6 +1,9 @@
+const MAX_DESCRIPTION_LENGTH = 215;
+
 class MarvelService {
   _apiBase = "https://gateway.marvel.com:443/v1/public/";
   _apiKey = "apikey=db9c54d7c77cf96fdf3a8daac8b8a8b9";
+
   getResource = async (url) => {
     let res = await fetch(url);
 
@@ -28,13 +31,17 @@ class MarvelService {
   };
 
   _tansformCharacter = (character) => {
+    console.log("CHAR: ", character);
     return {
       id: character.id,
       name: character.name,
-      description: character.description,
+      description: character.description
+        ? character.description.substr(0, MAX_DESCRIPTION_LENGTH) + "..."
+        : "There is no information about this character.",
       thumbnail: `${character.thumbnail.path}.${character.thumbnail.extension}`,
       homepage: character.urls[0].url,
       wiki: character.urls[1].url,
+      comics: character.comics.items,
     };
   };
 }
