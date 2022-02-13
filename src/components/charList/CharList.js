@@ -1,4 +1,6 @@
 import { Component } from "react";
+import PropTypes from "prop-types";
+
 import CharacterHelper from "../../helpers/character-helper";
 import MarvelService from "../../services/MarvelService";
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -118,5 +120,9 @@ class CharList extends Component {
     );
   }
 }
+
+CharList.propTypes = {
+  onCharClick: PropTypes.func,
+};
 
 export default CharList;

@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 import "./charInfo.scss";
 import { Component } from "react";
 import MarvelService from "../../services/MarvelService";
@@ -122,4 +124,20 @@ const View = ({ char, imgStyle }) => {
   );
 };
 
+CharInfo.propTypes = {
+  clickedCharId: PropTypes.number,
+};
+
+View.propTypes = {
+  char: PropTypes.exact({
+    id: PropTypes.number,
+    name: PropTypes.string,
+    description: PropTypes.string,
+    thumbnail: PropTypes.string,
+    homepage: PropTypes.string,
+    wiki: PropTypes.string,
+    comics: PropTypes.array
+  }).isRequired,
+  imgStyle: PropTypes.object
+};
 export default CharInfo;
