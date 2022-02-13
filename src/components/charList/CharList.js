@@ -7,29 +7,53 @@ import Spinner from "../spinner/Spinner";
 import "./charList.scss";
 
 class CharList extends Component {
+  MAX_CHARACTER_ID_ON_SERVER = 1559;
   constructor(props) {
     super(props);
     this.state = {
       characters: [],
       isLoading: true,
       error: false,
+      newCharactersLoading: false,
+      charactersEnded: false,
+      offset: 210,
     };
   }
-  marvelApi = new MarvelService();
 
-  onCharactersLoad = (charactersArr) => {
-    this.setState({
-      characters: charactersArr,
+  marvelApi = new MarvelService();
+  componentDidMount() {
+    this.onRequest();
+  }
+
+  onCharactersLoad = (newCharacters) => {
+    this.setState(({ offset }) => ({ offset: offset + newCharacters.length }));
+
+    let ended = false;
+    if (
+      newCharacters.length < 9 ||
+      this.state.offset >= this.MAX_CHARACTER_ID_ON_SERVER
+    ) {
+      ended = true;
+    }
+    this.setState(({ characters, offset }) => ({
+      characters: [...characters, ...newCharacters],
       isLoading: false,
-    });
+      newCharactersLoading: false,
+      charactersEnded: ended,
+    }));
   };
 
-  componentDidMount() {
+  onNewCharactersLoading = () => {
+    this.setState({ newCharactersLoading: true });
+  };
+
+  onRequest = (offset) => {
+    this.onNewCharactersLoading();
     this.marvelApi
-      .getAllCharacters()
+      .getAllCharacters(offset)
       .then(this.onCharactersLoad)
       .catch(console.log);
-  }
+  };
 
   onError = () => {
     this.setState({
@@ -42,7 +66,7 @@ class CharList extends Component {
   onCharClick = (event, id) => {
     const { onCharClick } = this.props;
     onCharClick(id);
-  }
+  };
 
   getCharacterList = () => {
     const { characters } = this.state;
@@ -52,7 +76,11 @@ class CharList extends Component {
         ? { objectFit: "contain" }
         : null;
       return (
-        <li className="char__item" key={id} onClick={event => this.onCharClick(event, id)}>
+        <li
+          className="char__item"
+          key={id}
+          onClick={(event) => this.onCharClick(event, id)}
+        >
           <img src={thumbnail} alt={name} style={imgStyle} />
           <div className="char__name">{name}</div>
         </li>
@@ -63,7 +91,8 @@ class CharList extends Component {
   };
 
   render() {
-    const { isLoading, error } = this.state;
+    const { isLoading, error, newCharactersLoading, charactersEnded, offset } =
+      this.state;
     const characterList = this.getCharacterList();
 
     const spinner = isLoading ? <Spinner /> : null;
@@ -77,7 +106,12 @@ class CharList extends Component {
           {spinner}
           {content}
         </ul>
-        <button className="button button__main button__long">
+        <button
+          className="button button__main button__long"
+          onClick={() => this.onRequest(offset)}
+          disabled={newCharactersLoading}
+          style={{ display: charactersEnded ? "none" : "block" }}
+        >
           <div className="inner">load more</div>
         </button>
       </div>

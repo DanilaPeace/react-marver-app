@@ -3,6 +3,7 @@ const MAX_DESCRIPTION_LENGTH = 215;
 class MarvelService {
   _apiBase = "https://gateway.marvel.com:443/v1/public/";
   _apiKey = "apikey=db9c54d7c77cf96fdf3a8daac8b8a8b9";
+  _baseOffset = 210;
 
   getResource = async (url) => {
     let res = await fetch(url);
@@ -14,9 +15,9 @@ class MarvelService {
     return await res.json();
   };
 
-  getAllCharacters = async () => {
+  getAllCharacters = async (offset = this._baseOffset) => {
     const res = await this.getResource(
-      `${this._apiBase}characters?limit=9&offset=210&${this._apiKey}`
+      `${this._apiBase}characters?limit=9&offset=${offset}&${this._apiKey}`
     );
 
     return res.data.results.map(this._tansformCharacter);
@@ -31,7 +32,6 @@ class MarvelService {
   };
 
   _tansformCharacter = (character) => {
-    console.log("CHAR: ", character);
     return {
       id: character.id,
       name: character.name,

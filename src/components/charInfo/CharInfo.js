@@ -17,6 +17,7 @@ class CharInfo extends Component {
   componentDidMount() {
     this.updateCharInfo();
   }
+
   componentDidUpdate(prevProps, prevState) {
     if (this.props.clickedCharId !== prevProps.clickedCharId) {
       this.updateCharInfo();
@@ -60,12 +61,11 @@ class CharInfo extends Component {
     const imgStyle = !CharacterHelper.charHasImg(character?.thumbnail)
       ? { objectFit: "contain" }
       : null;
-    // const skeleton = loading || error || character ? null : <Skeleton />;
     const skeleton = !loading && !error && !character ? <Skeleton /> : null;
     const spinner = loading ? <Spinner /> : null;
     const errorMessage = error ? <ErrorMessage /> : null;
     const content = !(loading || error || !character) ? (
-      <View char={character} imgStyle={imgStyle}/>
+      <View char={character} imgStyle={imgStyle} />
     ) : null;
 
     return (
@@ -80,19 +80,29 @@ class CharInfo extends Component {
 }
 
 const View = ({ char, imgStyle }) => {
-  console.log(char);
   const { name, description, thumbnail, homepage, wiki, comics } = char;
-  const comicsList = comics.map((item, idx) => {
-    return (
-      <li key={idx} className="char__comics-item">
-        {item.name}
-      </li>
-    );
-  });
+
+  const getAmountComics = (amount) => {
+    const comicsArray = [];
+    for (let comicsIndex = 0; comicsIndex < comics.length; comicsIndex++) {
+      if (comicsIndex > amount) break;
+      const comicsItem = (
+        <li key={comicsIndex} className="char__comics-item">
+          {comics[comicsIndex].name}
+        </li>
+      );
+      comicsArray.push(comicsItem);
+    }
+    return comicsArray;
+  };
+
+  const comicsList = comics.length
+    ? getAmountComics(9)
+    : "There is no commics with this character.";
   return (
     <>
       <div className="char__basics">
-        <img src={thumbnail} alt={name} style={imgStyle}/>
+        <img src={thumbnail} alt={name} style={imgStyle} />
         <div>
           <div className="char__info-name">{name}</div>
           <div className="char__btns">
